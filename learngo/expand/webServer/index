@@ -1,0 +1,262 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-width=1.0, maximum=1.0, user-scalable=0">
+	<meta name="keywords" content="markdown, editor, duono">
+	<link rel="shortcut icon" type="image/x-icon" href="https://duono.xyz/duonoIcon.png">
+	<script src="https://loffei.com/js/jQuery/jquery-3.4.1.js?ver=1.0"></script>
+	<script src="https://duono.xyz/markdown/showdown.js?ver=1.0"></script>
+	<title>在线Markdown编辑器 翻译器 简约 极简 轻量级</title>
+	<style>
+		body{
+			margin: 0;
+			padding: 0;
+			background: #f5f5f5;
+		}
+		#logo{
+			position: absolute;
+			width: 54px;
+			left: 0;
+			top: 0;
+			transform: translate(0, -100%);
+		}
+		#logo:hover{
+			cursor: pointer;
+		}
+		#wrap{
+			position: fixed;
+			width: 85%;
+			top: 50%;
+			left: 50%;
+			transform: translate(-50%, -50%);
+		}
+		#editArea{
+			position: absolute;
+			width: 42%;
+			height: 100%;
+			top: 0;
+			left: 0;
+			background: #2A2A2A;
+		}
+		#showArea{
+			position: absolute;
+			width: 58%;
+			height: 100%;
+			top: 0;
+			right: 0;
+			background: #fff;
+		}
+		#show{
+			position: relative;
+			padding: 5.8em;
+			width: 100%;
+			height: 100%;
+			box-sizing: border-box;
+			overflow: auto;
+			line-height: 1.6em;
+			word-break: a
+		}
+		#show p{
+			margin: 1.4em 0;
+		}
+		#toolsWrap{
+			position: absolute;
+			width: 19px;
+			top: 34px;
+			right: 0;
+			transform: translate(100%, 0);
+		}
+		.tools{
+			position: relative;
+			width: 100%;
+			font-size: 12px;
+			color: #fff;
+			padding: 4px;
+			box-sizing: border-box;
+			transition: background 0.4s;
+		}
+		.tools:hover{
+			cursor: pointer;
+		}
+		#toolsTheme{
+			background: #FFC6A8;
+		}
+		#toolsTheme:hover{
+			background: #F98345;
+		}
+		#toolsGrammar{
+			background: #97DFB9;
+		}
+		#toolsGrammar:hover{
+			background: #0BC262;
+		}
+		#toolsGive{
+			background: #97C9DF;
+		}
+		#toolsGive:hover{
+			background: #2091C2;
+		}
+		#edit{
+			position: relative;
+			width: 100%;
+			height: 100%;
+			resize: none;
+			box-sizing: border-box;
+			border: none;
+			padding: 0.6em;
+			font-size: 1.2em;
+			line-height: 1.6em;
+			background: none;
+			color: #fff;
+		}
+		#edit:focus{
+			outline: none;
+		}
+		.drops{
+			position: absolute;
+			width: 100px;
+			top: 0;
+			left: 0;
+			transform: translate(-100%, 0);
+			background: #fff;
+			box-shadow: 1px 2px 6px #ddd;
+			opacity: 0;
+			z-index: -5;
+			visibility: hidden;
+		}
+		.drops ul{
+			list-style: none;
+			margin: 0;
+			padding: 0;
+		}
+		.drops li{
+			background: rgba(0, 0, 0, 0);
+			text-align: center;
+			transition: background 0.2s;
+			color: #000;
+			font-size: 16px;
+			padding: 4px 0;
+		}
+		.drops li:hover{
+			cursor: pointer;
+			background: rgba(0, 0, 0, 0.1);
+		}
+		footer{
+			display: block;
+			position: fixed;
+			width: 100%;
+			font-size: 12px;
+			bottom: 20px;
+			left: 0;
+			text-align: center;
+			color: #888;
+		}
+		footer p{
+			margin: 0;
+		}
+	</style>
+</head>
+<body>
+	
+	<div id="wrap">
+		<img src="https://duono.xyz/duonoIcon.png" id="logo" onclick="window.open('https://duono.xyz')">
+		<div id="editArea">
+			<textarea id="edit" autofocus>
+# Welcome!
+
+---
+
+*Based on [Showdown1.9.1](https://github.com/showdownjs/showdown)*  
+
+### Custom options:
+- [x] emoji
+- [x] tables
+- [x] tasklists  
+
+**This page won't save your codes automatically!**
+			</textarea>
+			
+		</div>
+		<div id="showArea">
+			<div id="show"></div>
+			
+			<div id="toolsWrap">
+				<div class="tools" id="toolsTheme">
+					风<br>格
+					<div class="drops">
+						<ul>
+							<li>原生</li>
+						</ul>
+					</div>
+				</div>
+				<div class="tools" id="toolsGrammar" onclick="window.open('https://github.com/showdownjs/showdown/wiki/Showdown\'s-Markdown-syntax')">语<br>法</div>
+			</div>
+			
+		</div>
+	</div>
+	<footer>
+		<p>&copy;2020 Duono Studio | All rights reserved.</p>
+		<p>Contact us: team@duono.xyz</p>
+	</footer>
+	
+
+	<script>
+		$(function(){
+			function resizeWrap() {
+				$('#wrap').css('height', document.documentElement.clientHeight * 0.833 + 'px');
+			}
+			resizeWrap();
+			document.body.onresize = function(){
+				resizeWrap();
+			}
+
+			function convt() {
+				var text = document.getElementById('edit').value,
+					target = document.getElementById('show'),
+					converter = new showdown.Converter(),
+					html = converter.makeHtml(text);
+				target.innerHTML = html;
+			}
+			$('#edit').on('input propertychange', convt);
+			convt();
+
+			$('#toolsTheme').on('mouseover', function(){
+				$('#toolsTheme .drops').css({
+					'visibility': 'visible',
+					'z-index': '5',
+					'opacity': '1'
+				});
+			});
+			$('#toolsTheme').on('mouseout', function(){
+				$('#toolsTheme .drops').css({
+					'z-index': '-5',
+					'opacity': '0',
+					'visibility': 'hidden'
+				});
+			});
+
+			$("textarea").keydown(function(e) {
+			    if(e.keyCode === 9) { // tab was pressed
+			        // get caret position/selection
+			        var start = this.selectionStart;
+			            end = this.selectionEnd;
+
+			        var $this = $(this);
+
+			        // set textarea value to: text before caret + tab + text after caret
+			        $this.val($this.val().substring(0, start)
+			                    + "\t"
+			                    + $this.val().substring(end));
+
+			        // put caret at right position again
+			        this.selectionStart = this.selectionEnd = start + 1;
+
+			        // prevent the focus lose
+			        return false;
+			    }
+			});
+		});
+	</script>
+</body>
+</html>
